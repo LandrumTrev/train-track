@@ -145,10 +145,10 @@
 	};
 
 	Clock.prototype.drawHourHand = function() {
-		var hours = (Date.now() / 3600000) % 12;
-		// var handAngle = (Math.PI * 2) * (-hours / 12);
-		// I think (Math.PI * 1 should make hour hand EST?)
-		var handAngle = (Math.PI * 1) * (-hours / 12);
+		// var hours = (Date.now() / 3600000) % 12;
+		// hours adjusted to -4:00 EST
+		var hours = ((Date.now() / 3600000) % 12) - 4;
+		var handAngle = (Math.PI * 2) * (-hours / 12);
 
 		this.drawHand(handAngle, this.hourHandOptions);
 	};

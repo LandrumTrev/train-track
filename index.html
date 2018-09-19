@@ -187,6 +187,9 @@
     <script src="assets/js/scripts.js"></script>
 
     <script>
+        
+        // ==========================================================
+        // CONNECT TO FIREBASE REALTIME DATABASE
         // ==========================================================
 
         // initialize variable with Firebase credentials
@@ -203,14 +206,19 @@
         // create a reference to the Firebase Realtime Database
         var db = firebase.database();
 
+
+        // ==========================================================
+        // INITIALIZE VARIABLES FOR STORED DATA
         // ==========================================================
 
-        // Initial Values
         var trainName = "";
         var trainRoute = "";
-        var trainFirst = 0;
+        var trainFirst = "";
         var trainFreq = 0;
 
+
+        // ==========================================================
+        // SUBMIT BUTTON BELOW - SENDS NEW TRAIN TO DATABASE
         // ==========================================================
 
         $("#add_train_btn").on("click", function () {
@@ -222,10 +230,10 @@
             trainFirst = $("#train_first").val().trim();
             trainFreq = $("#train_freq").val().trim();
 
-            console.log(trainName);
-            console.log(trainRoute);
-            console.log(trainFirst);
-            console.log(trainFreq);
+            // console.log(trainName);
+            // console.log(trainRoute);
+            // console.log(trainFirst);
+            // console.log(trainFreq);
 
             var addTrain = {
                 name: trainName,
@@ -248,102 +256,46 @@
 
 
 
+        // ==========================================================
+        // MINUTES AWAY AND NEXT ARRIVAL CALCULATIONS BELOW
+        // ==========================================================
 
+        trainFirst = "03:10";
+        trainFreq = 30;
 
+        // create a MomentJS object, which is today's date, but pushed back one year,
+        // and the time is MILITARY HOURS (HH) as set in the var trainFirst
+        var trainFirstConverted = moment(trainFirst, "HH:mm").subtract(1, "years");
+        // console.log(trainFirstConverted);
 
-
-
-
-        // Assumptions
-        // var tFrequency = 3;
-
-        // Time is 3:30 AM
-        // var firstTime = "03:30";
-
-        // First Time (pushed back 1 year to make sure it comes before current time)
-        // var firstTimeConverted = moment(firstTime, "HH:mm").subtract(1, "years");
-        // var firstTimeConverted = moment(firstTime, "HH:mm").subtract(1, "years").format('MMMM Do YYYY, h:mm:ss a');
-        // console.log(firstTimeConverted);
-
-        // Current Time
-        // var currentTime = moment();
+        // create a MomentJS current time object by just calling: moment()
+        var currentTime = moment();
+        // console the current time with a label, and print it as CIVILIAN HOURS (hh)
+        // pass the currentTime object into moment(), then .format it's output
         // console.log("CURRENT TIME: " + moment(currentTime).format("hh:mm"));
 
-        // Difference between the times
-        // var diffTime = moment().diff(moment(firstTimeConverted), "minutes");
-        // console.log("DIFFERENCE IN TIME: " + diffTime);
+        // get difference in minutes between Now and trainFirstConverted objects
+        // this gives 365 days worth of minutes, +/- the difference btw Now + trainFirst
+        var timeDiffMinutes = moment().diff(moment(trainFirstConverted), "minutes");
+        // console.log("DIFFERENCE IN TIME: " + timeDiffMinutes);
 
-        // Time apart (remainder)
-        // var tRemainder = diffTime % tFrequency;
-        // console.log(tRemainder);
+        // get the remainder (MODULUS %) of dividing timeDiffMinutes by / trainFreq
+        var timeRemainder = timeDiffMinutes % trainFreq;
+        // console.log(timeRemainder);
 
-        // Minute Until Train
-        // var tMinutesTillTrain = tFrequency - tRemainder;
-        // console.log("MINUTES TILL TRAIN: " + tMinutesTillTrain);
+        // MINUTES AWAY from next train arrival is
+        // trainFreq minus timeRemainder
+        var nextTrainMinutes = trainFreq - timeRemainder;
+        console.log("MINUTES TILL TRAIN: " + nextTrainMinutes);
 
-        // Next Train
-        // var nextTrain = moment().add(tMinutesTillTrain, "minutes");
-        // console.log("ARRIVAL TIME: " + moment(nextTrain).format("hh:mm"));
-
-
-
-
-
-
-
-        // Assume the following situations.
-
-        // ==========================================================
-
-
-        // (TEST 1)
-        // First Train of the Day is 3:00 AM
-        // Assume Train comes every 3 minutes.
-        // Assume the current time is 3:16 AM....
-        // What time would the next train be...? (Use your brain first)
-        // It would be 3:18 -- 2 minutes away
-
-
-
-        // Solved Mathematically
-        // Test case 1:
-
-        // Current Time Minutes minus First Train Time Minutes:
-        // 16 - 00 = 16
-
-        // Current Minutes modulus Interval Minutes = Minutes To Remove fron Interval
-        // 16 % 3 = 1 (Modulus is the remainder)
-
-        // Interval Minutes minus Minutes to Remove from Interval = Minutes Away
-        // 3 - 1 = 2 minutes away
-
-        // Minutes Away plus Current Time = Time of Arrival
-        // 2 + 3:16 = 3:18
+        // TIME OF NEXT ARRIVAL
+        // get Now, moment(), and .add
+        var nextTrain = moment().add(nextTrainMinutes, "minutes");
+        console.log("ARRIVAL TIME: " + moment(nextTrain).format("hh:mm"));
 
 
         // ==========================================================
-
-
-        // (TEST 2)
-        // First Train of the Day is 3:00 AM
-        // Assume Train comes every 7 minutes.
-        // Assume the current time is 3:16 AM....
-        // What time would the next train be...? (Use your brain first)
-        // It would be 3:21 -- 5 minutes away
-
-
-
-        // Solved Mathematically
-        // Test case 2:
-
-        // Current Time Minutes minus First Train Time Minutes
-        // 16 - 00 = 16
-
-        //
-        // 16 % 7 = 2 (Modulus is the remainder)
-        // 7 - 2 = 5 minutes away
-        // 5 + 3:16 = 3:21
-
+        // MINUTES AWAY AND NEXT ARRIVAL CALCULATIONS BELOW
         // ==========================================================
 
 
@@ -370,32 +322,7 @@
 
 
 
-        // // on Submit button click, 
-        // $("#add-user").on("click", function (event) {
-        //     event.preventDefault();
 
-        //     // set variable values from content of input fields
-        //     name = $("#name-input").val().trim();
-        //     email = $("#email-input").val().trim();
-        //     age = $("#age-input").val().trim();
-        //     comment = $("#comment-input").val().trim();
-
-        //     // .push() a new data set object to root level of database
-        //     db.ref().push({
-        //         name: name,
-        //         email: email,
-        //         age: age,
-        //         comment: comment,
-        //         dateAdded: firebase.database.ServerValue.TIMESTAMP
-        //     });
-
-        //     // clear the input fields for the next entry
-        //     $("#name-input").val("");
-        //     $("#email-input").val("");
-        //     $("#age-input").val("");
-        //     $("#comment-input").val("");
-
-        // });
 
         // // watch the root top level of database for any child data set objects added
         // db.ref().on("child_added", function (childSnapshot) {
