@@ -93,7 +93,7 @@
                             <th scope="col">Minutes Away</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="train_list">
                         <tr>
                             <th scope="row">Trans-Siberian Express</th>
                             <td>Moscow-Vladivostok</td>
@@ -101,7 +101,7 @@
                             <td>05:35 PM</td>
                             <td>10</td>
                         </tr>
-                        <tr>
+                        <!-- <tr>
                             <th scope="row">Orient Express</th>
                             <td>Paris-Constantinople</td>
                             <td>3600</td>
@@ -142,7 +142,7 @@
                             <td>25</td>
                             <td>05:28 PM</td>
                             <td>3</td>
-                        </tr>
+                        </tr> -->
                     </tbody>
                 </table>
             </div>
@@ -187,7 +187,6 @@
     <script src="assets/js/scripts.js"></script>
 
     <script>
-        
         // ==========================================================
         // CONNECT TO FIREBASE REALTIME DATABASE
         // ==========================================================
@@ -260,92 +259,103 @@
         // MINUTES AWAY AND NEXT ARRIVAL CALCULATIONS BELOW
         // ==========================================================
 
-        trainFirst = "03:10";
-        trainFreq = 30;
+        // // trainFirst = "03:10";
+        // // trainFreq = 30;
 
-        // create a MomentJS object, which is today's date, but pushed back one year,
-        // and the time is MILITARY HOURS (HH) as set in the var trainFirst
-        var trainFirstConverted = moment(trainFirst, "HH:mm").subtract(1, "years");
-        // console.log(trainFirstConverted);
+        // // create a MomentJS object, which is today's date, but pushed back one year,
+        // // and the time is MILITARY HOURS (HH) as set in the var trainFirst
+        // var trainFirstConverted = moment(trainFirst, "HH:mm").subtract(1, "years");
+        // // console.log(trainFirstConverted);
 
-        // create a MomentJS current time object by just calling: moment()
-        var currentTime = moment();
-        // console the current time with a label, and print it as CIVILIAN HOURS (hh)
-        // pass the currentTime object into moment(), then .format it's output
-        // console.log("CURRENT TIME: " + moment(currentTime).format("hh:mm"));
+        // // create a MomentJS current time object by just calling: moment()
+        // var currentTime = moment();
+        // // console the current time with a label, and print it as CIVILIAN HOURS (hh)
+        // // pass the currentTime object into moment(), then .format it's output
+        // // console.log("CURRENT TIME: " + moment(currentTime).format("hh:mm"));
 
-        // get difference in minutes between Now and trainFirstConverted objects
-        // this gives 365 days worth of minutes, +/- the difference btw Now + trainFirst
-        var timeDiffMinutes = moment().diff(moment(trainFirstConverted), "minutes");
-        // console.log("DIFFERENCE IN TIME: " + timeDiffMinutes);
+        // // get difference in minutes between Now and trainFirstConverted objects
+        // // this gives 365 days worth of minutes, +/- the difference btw Now + trainFirst
+        // var timeDiffMinutes = moment().diff(moment(trainFirstConverted), "minutes");
+        // // console.log("DIFFERENCE IN TIME: " + timeDiffMinutes);
 
-        // get the remainder (MODULUS %) of dividing timeDiffMinutes by / trainFreq
-        var timeRemainder = timeDiffMinutes % trainFreq;
-        // console.log(timeRemainder);
+        // // get the remainder (MODULUS %) of dividing timeDiffMinutes by / trainFreq
+        // var timeRemainder = timeDiffMinutes % trainFreq;
+        // // console.log(timeRemainder);
 
-        // MINUTES AWAY from next train arrival is
-        // trainFreq minus timeRemainder
-        var nextTrainMinutes = trainFreq - timeRemainder;
-        console.log("MINUTES TILL TRAIN: " + nextTrainMinutes);
+        // // MINUTES AWAY from next train arrival is
+        // // trainFreq minus timeRemainder
+        // var nextTrainMinutes = trainFreq - timeRemainder;
+        // console.log("MINUTES TILL TRAIN: " + nextTrainMinutes);
 
-        // TIME OF NEXT ARRIVAL
-        // get Now, moment(), and .add
-        var nextTrain = moment().add(nextTrainMinutes, "minutes");
-        console.log("ARRIVAL TIME: " + moment(nextTrain).format("hh:mm"));
+        // // TIME OF NEXT ARRIVAL
+        // // get Now, moment(), and .add
+        // var nextTrain = moment().add(nextTrainMinutes, "minutes");
+        // // console.log("ARRIVAL TIME: " + moment(nextTrain).format("hh:mm"));
+        // var nextArrival = moment(nextTrain).format("hh:mm A");
+        // console.log(nextArrival);
 
 
         // ==========================================================
-        // MINUTES AWAY AND NEXT ARRIVAL CALCULATIONS BELOW
+        // EVENT LISTENER ADDS NEW DATABASE TRAINS TO THE PAGE'S SCHEDULE
         // ==========================================================
 
+        // watch the root top level of database for any child data set objects added
+        db.ref().on("child_added", function (childSnapshot) {
+
+            // when a data object is added, console log the values of all the childSnapshot's data properties 
+            console.log(childSnapshot.val().name);
+            // console.log(childSnapshot.val().route);
+            // console.log(childSnapshot.val().first);
+            console.log(childSnapshot.val().freq);
+            // console.log(childSnapshot.val());
+
+            trainFirst = "03:10";
+            trainFreq = 30;
+
+            // create a MomentJS object, which is today's date, but pushed back one year,
+            // and the time is MILITARY HOURS (HH) as set in the var trainFirst
+            var trainFirstConverted = moment(trainFirst, "HH:mm").subtract(1, "years");
+            // console.log(trainFirstConverted);
+
+            // create a MomentJS current time object by just calling: moment()
+            var currentTime = moment();
+            // console the current time with a label, and print it as CIVILIAN HOURS (hh)
+            // pass the currentTime object into moment(), then .format it's output
+            // console.log("CURRENT TIME: " + moment(currentTime).format("hh:mm"));
+
+            // get difference in minutes between Now and trainFirstConverted objects
+            // this gives 365 days worth of minutes, +/- the difference btw Now + trainFirst
+            var timeDiffMinutes = moment().diff(moment(trainFirstConverted), "minutes");
+            // console.log("DIFFERENCE IN TIME: " + timeDiffMinutes);
+
+            // get the remainder (MODULUS %) of dividing timeDiffMinutes by / trainFreq
+            var timeRemainder = timeDiffMinutes % trainFreq;
+            // console.log(timeRemainder);
+
+            // MINUTES AWAY from next train arrival is
+            // trainFreq minus timeRemainder
+            var nextTrainMinutes = trainFreq - timeRemainder;
+            console.log("MINUTES TILL TRAIN: " + nextTrainMinutes);
+
+            // TIME OF NEXT ARRIVAL
+            // get Now, moment(), and .add
+            var nextTrain = moment().add(nextTrainMinutes, "minutes");
+            // console.log("ARRIVAL TIME: " + moment(nextTrain).format("hh:mm"));
+            var nextArrival = moment(nextTrain).format("hh:mm A");
+            console.log(nextArrival);
+
+
+            // then .append a list of all the new data object's properties to the All Members area of the page
+            $("#train_list").append("<tr><th scope='row'>" + childSnapshot.val().name + "</th><td>" + childSnapshot.val().route + "</td><td>" + childSnapshot.val().freq + "</td><td>" + nextArrival + "</td><td>" + nextTrainMinutes + "</td></tr>");
+
+            // and if any errors occur, send them to this function
+        }, function (errorObject) {
+            console.log("Errors handled: " + errorObject.code);
+        });
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        // // watch the root top level of database for any child data set objects added
-        // db.ref().on("child_added", function (childSnapshot) {
-
-        //     // when a data object is added, console log the values of all the childSnapshot's data properties 
-        //     // console.log(childSnapshot.val().name);
-        //     // console.log(childSnapshot.val().email);
-        //     // console.log(childSnapshot.val().age);
-        //     // console.log(childSnapshot.val().comment);
-        //     // console.log(childSnapshot.val().joinDate);
-
-        //     // then .append a list of all the new data object's properties to the All Members area of the page
-        //     $("#full-member-list").append("<div class='well'><span class='member-name'> " +
-        //         childSnapshot.val().name +
-        //         " </span><span class='member-email'> " + childSnapshot.val().email +
-        //         " </span><span class='member-age'> " + childSnapshot.val().age +
-        //         " </span><span class='member-comment'> " + childSnapshot.val().comment +
-        //         " </span></div>");
-
-        //     // and if any errors occur, send them to this function
-        // }, function (errorObject) {
-        //     console.log("Errors handled: " + errorObject.code);
-        // });
 
         // // THIS CODE ADDS THE MOST RECENT MEMBER'S DATA TO THE "Most Recent Member" PAGE AREA
         // // when a child data object is added, .on("child_added",... to the root directory db.ref()
