@@ -87,7 +87,7 @@
                     <thead>
                         <tr class="text-primary">
                             <th scope="col">Train Name</th>
-                            <th scope="col">Destination</th>
+                            <th scope="col">Route</th>
                             <th scope="col">Frequency (min)</th>
                             <th scope="col">Next Arrival</th>
                             <th scope="col">Minutes Away</th>
@@ -183,26 +183,26 @@
                 <form>
 
                     <div class="form-group">
-                        <label for="trainName">Train Name</label>
-                        <input type="text" class="form-control" id="trainName" placeholder="name of a new train route">
+                        <label for="train_name">Train Name</label>
+                        <input type="text" class="form-control" id="train_name" placeholder="name of a new train route">
                     </div>
 
 
                     <div class="form-group">
-                        <label for="trainDest">Destination</label>
-                        <input type="text" class="form-control" id="trainDest" placeholder="final destination of train route">
+                        <label for="train_route">Route</label>
+                        <input type="text" class="form-control" id="train_route" placeholder="final destination of train route">
                     </div>
 
 
                     <div class="form-group">
-                        <label for="trainTime">First Train Time (HH:mm) military time</label>
-                        <input type="text" class="form-control" id="trainTime" placeholder="arrival time of first train">
+                        <label for="train_time">First Train Time (HH:mm) military time</label>
+                        <input type="text" class="form-control" id="train_time" placeholder="arrival time of first train">
                     </div>
 
 
                     <div class="form-group">
-                        <label for="trainFreq">Frequency</label>
-                        <input type="text" class="form-control" id="trainFreq" placeholder="number of minutes between each train">
+                        <label for="train_freq">Frequency</label>
+                        <input type="text" class="form-control" id="train_freq" placeholder="number of minutes between each train">
                     </div>
 
                     <button type="submit" class="btn btn-primary">Submit</button>
@@ -226,12 +226,88 @@
     <script src="assets/js/scripts.js"></script>
     <script src="assets/js/swissrail.js"></script>
     <script>
+        // initialize variable with Firebase credentials
+        var config = {
+            apiKey: "AIzaSyCAlKIQlCVpzuFGD4nNsXqistWoyzM5wcE",
+            authDomain: "trainschedule-a52e0.firebaseapp.com",
+            databaseURL: "https://trainschedule-a52e0.firebaseio.com",
+            projectId: "trainschedule-a52e0",
+            storageBucket: "trainschedule-a52e0.appspot.com",
+            messagingSenderId: "619259019326"
+        };
+        // initalize Firebase, send credentials
+        firebase.initializeApp(config);
+        // create a reference to the Firebase Realtime Database
+        var db = firebase.database();
 
+        // Initial Values
+        var trainName = "";
+        var trainRoute = "";
+        var trainFirst = 0;
+        var trainFreq = 0;
 
+        // on Submit button click, 
+        $("#add-user").on("click", function (event) {
+            event.preventDefault();
 
+            // set variable values from content of input fields
+            name = $("#name-input").val().trim();
+            email = $("#email-input").val().trim();
+            age = $("#age-input").val().trim();
+            comment = $("#comment-input").val().trim();
 
+            // .push() a new data set object to root level of database
+            db.ref().push({
+                name: name,
+                email: email,
+                age: age,
+                comment: comment,
+                dateAdded: firebase.database.ServerValue.TIMESTAMP
+            });
 
+            // clear the input fields for the next entry
+            $("#name-input").val("");
+            $("#email-input").val("");
+            $("#age-input").val("");
+            $("#comment-input").val("");
 
+        });
+
+        // watch the root top level of database for any child data set objects added
+        db.ref().on("child_added", function (childSnapshot) {
+
+            // when a data object is added, console log the values of all the childSnapshot's data properties 
+            // console.log(childSnapshot.val().name);
+            // console.log(childSnapshot.val().email);
+            // console.log(childSnapshot.val().age);
+            // console.log(childSnapshot.val().comment);
+            // console.log(childSnapshot.val().joinDate);
+
+            // then .append a list of all the new data object's properties to the All Members area of the page
+            $("#full-member-list").append("<div class='well'><span class='member-name'> " +
+                childSnapshot.val().name +
+                " </span><span class='member-email'> " + childSnapshot.val().email +
+                " </span><span class='member-age'> " + childSnapshot.val().age +
+                " </span><span class='member-comment'> " + childSnapshot.val().comment +
+                " </span></div>");
+
+            // and if any errors occur, send them to this function
+        }, function (errorObject) {
+            console.log("Errors handled: " + errorObject.code);
+        });
+
+        // THIS CODE ADDS THE MOST RECENT MEMBER'S DATA TO THE "Most Recent Member" PAGE AREA
+        // when a child data object is added, .on("child_added",... to the root directory db.ref()
+        // set .orderByChild("dateAdded") to use dateAdded as the sorting order,
+        // and limitToLast(1) to only return the 1 most recent added data object (1 member)
+        db.ref().orderByChild("dateAdded").limitToLast(1).on("child_added", function (snapshot) {
+            // Change the HTML to reflect
+            $("#name-display").text(snapshot.val().name);
+            $("#email-display").text(snapshot.val().email);
+            $("#age-display").text(snapshot.val().age);
+            $("#comment-display").text(snapshot.val().comment);
+            console.log(snapshot.val());
+        });
     </script>
 </body>
 
