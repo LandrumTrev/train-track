@@ -106,8 +106,43 @@
 
 
     // ==========================================================
+    // MINUTES AWAY AND NEXT ARRIVAL CALCULATIONS BELOW
+    // ==========================================================
 
+    // // trainFirst = "03:10";
+    // // trainFreq = 30;
 
+    // // create a MomentJS object, which is today's date, but pushed back one year,
+    // // and the time is MILITARY HOURS (HH) as set in the var trainFirst
+    // var trainFirstConverted = moment(trainFirst, "HH:mm").subtract(1, "years");
+    // // console.log(trainFirstConverted);
+
+    // // create a MomentJS current time object by just calling: moment()
+    // var currentTime = moment();
+    // // console the current time with a label, and print it as CIVILIAN HOURS (hh)
+    // // pass the currentTime object into moment(), then .format it's output
+    // // console.log("CURRENT TIME: " + moment(currentTime).format("hh:mm"));
+
+    // // get difference in minutes between Now and trainFirstConverted objects
+    // // this gives 365 days worth of minutes, +/- the difference btw Now + trainFirst
+    // var timeDiffMinutes = moment().diff(moment(trainFirstConverted), "minutes");
+    // // console.log("DIFFERENCE IN TIME: " + timeDiffMinutes);
+
+    // // get the remainder (MODULUS %) of dividing timeDiffMinutes by / trainFreq
+    // var timeRemainder = timeDiffMinutes % trainFreq;
+    // // console.log(timeRemainder);
+
+    // // MINUTES AWAY from next train arrival is
+    // // trainFreq minus timeRemainder
+    // var nextTrainMinutes = trainFreq - timeRemainder;
+    // console.log("MINUTES TILL TRAIN: " + nextTrainMinutes);
+
+    // // TIME OF NEXT ARRIVAL
+    // // get Now, moment(), and .add
+    // var nextTrain = moment().add(nextTrainMinutes, "minutes");
+    // // console.log("ARRIVAL TIME: " + moment(nextTrain).format("hh:mm"));
+    // var nextArrival = moment(nextTrain).format("hh:mm A");
+    // console.log(nextArrival);
   </script>
 
 </body>

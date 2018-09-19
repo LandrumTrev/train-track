@@ -55,18 +55,26 @@
             /* border: .1px solid red; */
 
         }
-
         /* STYLES FOR SWISS RAILWAY CLOCK ABOVE */
-
 
         .jumbotron {
             margin-top: 20px;
             background-color: rgb(226, 237, 250);
         }
-
         .card {
             margin-bottom: 30px;
         }
+
+
+        #time_box {
+            float: right;
+        }
+        #time_data {
+
+        }
+
+
+
     </style>
 </head>
 
@@ -81,7 +89,12 @@
         </div>
 
         <div class="card">
-            <h5 class="card-header bg-primary text-light">Current Train Schedule</h5>
+            <h5 class="card-header bg-primary text-light">Current Train Schedule
+                <span id="time_box" class="bg-primary text-light">Current Time:
+                    <span id="time_data" class="bg-primary text-light">00:00:00</span>
+                </span>
+            </h5>
+
             <div class="card-body">
                 <table class="table table-striped table-hover table-responsive-md">
                     <thead>
@@ -154,11 +167,11 @@
                 <form>
                     <div class="form-group">
                         <label class="font-weight-bold" for="train_name">Train Name</label>
-                        <input type="text" class="form-control" id="train_name" placeholder="name of a new train route">
+                        <input type="text" class="form-control" id="train_name" placeholder="new train name">
                     </div>
                     <div class="form-group">
                         <label class="font-weight-bold" for="train_route">Route</label>
-                        <input type="text" class="form-control" id="train_route" placeholder="final destination of train route">
+                        <input type="text" class="form-control" id="train_route" placeholder="origin-destination">
                     </div>
                     <div class="form-group">
                         <label for="train_first">
@@ -256,46 +269,6 @@
 
 
         // ==========================================================
-        // MINUTES AWAY AND NEXT ARRIVAL CALCULATIONS BELOW
-        // ==========================================================
-
-        // // trainFirst = "03:10";
-        // // trainFreq = 30;
-
-        // // create a MomentJS object, which is today's date, but pushed back one year,
-        // // and the time is MILITARY HOURS (HH) as set in the var trainFirst
-        // var trainFirstConverted = moment(trainFirst, "HH:mm").subtract(1, "years");
-        // // console.log(trainFirstConverted);
-
-        // // create a MomentJS current time object by just calling: moment()
-        // var currentTime = moment();
-        // // console the current time with a label, and print it as CIVILIAN HOURS (hh)
-        // // pass the currentTime object into moment(), then .format it's output
-        // // console.log("CURRENT TIME: " + moment(currentTime).format("hh:mm"));
-
-        // // get difference in minutes between Now and trainFirstConverted objects
-        // // this gives 365 days worth of minutes, +/- the difference btw Now + trainFirst
-        // var timeDiffMinutes = moment().diff(moment(trainFirstConverted), "minutes");
-        // // console.log("DIFFERENCE IN TIME: " + timeDiffMinutes);
-
-        // // get the remainder (MODULUS %) of dividing timeDiffMinutes by / trainFreq
-        // var timeRemainder = timeDiffMinutes % trainFreq;
-        // // console.log(timeRemainder);
-
-        // // MINUTES AWAY from next train arrival is
-        // // trainFreq minus timeRemainder
-        // var nextTrainMinutes = trainFreq - timeRemainder;
-        // console.log("MINUTES TILL TRAIN: " + nextTrainMinutes);
-
-        // // TIME OF NEXT ARRIVAL
-        // // get Now, moment(), and .add
-        // var nextTrain = moment().add(nextTrainMinutes, "minutes");
-        // // console.log("ARRIVAL TIME: " + moment(nextTrain).format("hh:mm"));
-        // var nextArrival = moment(nextTrain).format("hh:mm A");
-        // console.log(nextArrival);
-
-
-        // ==========================================================
         // EVENT LISTENER ADDS NEW DATABASE TRAINS TO THE PAGE'S SCHEDULE
         // ==========================================================
 
@@ -303,14 +276,18 @@
         db.ref().on("child_added", function (childSnapshot) {
 
             // when a data object is added, console log the values of all the childSnapshot's data properties 
-            console.log(childSnapshot.val().name);
+            // console.log(childSnapshot.val().name);
             // console.log(childSnapshot.val().route);
-            // console.log(childSnapshot.val().first);
+            console.log(childSnapshot.val().first);
             console.log(childSnapshot.val().freq);
             // console.log(childSnapshot.val());
 
-            trainFirst = "03:10";
-            trainFreq = 30;
+
+            // trainFirst = "03:10";
+            trainFirst = childSnapshot.val().first;
+
+            // trainFreq = 30;
+            trainFreq = childSnapshot.val().freq;
 
             // create a MomentJS object, which is today's date, but pushed back one year,
             // and the time is MILITARY HOURS (HH) as set in the var trainFirst
@@ -354,21 +331,11 @@
         });
 
 
+        // ==========================================================
+        // CODE FOR DIGITAL CLOCK
+        // ==========================================================
 
 
-
-        // // THIS CODE ADDS THE MOST RECENT MEMBER'S DATA TO THE "Most Recent Member" PAGE AREA
-        // // when a child data object is added, .on("child_added",... to the root directory db.ref()
-        // // set .orderByChild("dateAdded") to use dateAdded as the sorting order,
-        // // and limitToLast(1) to only return the 1 most recent added data object (1 member)
-        // db.ref().orderByChild("dateAdded").limitToLast(1).on("child_added", function (snapshot) {
-        //     // Change the HTML to reflect
-        //     $("#name-display").text(snapshot.val().name);
-        //     $("#email-display").text(snapshot.val().email);
-        //     $("#age-display").text(snapshot.val().age);
-        //     $("#comment-display").text(snapshot.val().comment);
-        //     console.log(snapshot.val());
-        // });
     </script>
 </body>
 
