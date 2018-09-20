@@ -273,57 +273,39 @@
         // watch the root top level of database for any child data set objects added
         db.ref().on("child_added", function (childSnapshot) {
 
-            // when a data object is added, console log the values of all the childSnapshot's data properties 
-            // console.log(childSnapshot.val().name);
-            // console.log(childSnapshot.val().route);
-            console.log(childSnapshot.val().first);
-            console.log(childSnapshot.val().freq);
-            // console.log(childSnapshot.val());
-
-
-            // trainFirst = "03:10";
+            // set trainFirst to value of .first, a 24h MILITARY TIME from snapshot data of the child_added
             trainFirst = childSnapshot.val().first;
 
-            // trainFreq = 30;
+            // set trainFreq to value of .freq, # MINUTES BETWEEN TRAINS from snapshot data of the child_added
             trainFreq = childSnapshot.val().freq;
 
-            // create a MomentJS object, which is today's date, but pushed back one year,
-            // and the time is MILITARY HOURS (HH) as set in the var trainFirst
-            var trainFirstConverted = moment(trainFirst, "HH:mm").subtract(1, "years");
-            // console.log(trainFirstConverted);
+            // MomentJS object: trainFirst time, 1 day ago, in 24h MILITARY TIME
+            // set in the past in case first train time is before current time, so we always get a positve number
+            var trainFirstConverted = moment(trainFirst, "HH:mm").subtract(1, "days");
 
-            // create a MomentJS current time object by just calling: moment()
-            var currentTime = moment();
-            // console the current time with a label, and print it as CIVILIAN HOURS (hh)
-            // pass the currentTime object into moment(), then .format it's output
-            // console.log("CURRENT TIME: " + moment(currentTime).format("hh:mm"));
-
-            // get difference in minutes between Now and trainFirstConverted objects
-            // this gives 365 days worth of minutes, +/- the difference btw Now + trainFirst
+            // Number (~ a day's worth of minutes, +/-): minutes difference between now and trainFirstConverted
             var timeDiffMinutes = moment().diff(moment(trainFirstConverted), "minutes");
-            // console.log("DIFFERENCE IN TIME: " + timeDiffMinutes);
 
             // get the remainder (MODULUS %) of dividing timeDiffMinutes by / trainFreq
             var timeRemainder = timeDiffMinutes % trainFreq;
             // console.log(timeRemainder);
 
-            // MINUTES AWAY from next train arrival is
-            // trainFreq minus timeRemainder
+            // MINUTES AWAY from next train arrival is trainFreq minus timeRemainder
             var nextTrainMinutes = trainFreq - timeRemainder;
-            console.log("MINUTES TILL TRAIN: " + nextTrainMinutes);
+            // console.log("MINUTES TILL TRAIN: " + nextTrainMinutes);
 
-            // TIME OF NEXT ARRIVAL
-            // get Now, moment(), and .add
+            // MomentJS object: TIME OF NEXT ARRIVAL is current time plus nextTrainMinutes
             var nextTrain = moment().add(nextTrainMinutes, "minutes");
-            // console.log("ARRIVAL TIME: " + moment(nextTrain).format("hh:mm"));
+
+            // format the nextTrain MomentJS object to get it's value in CIVILIAN TIME
             var nextArrival = moment(nextTrain).format("hh:mm A");
-            console.log(nextArrival);
+            // console.log(nextArrival);
 
 
-            // then .append a list of all the new data object's properties to the All Members area of the page
+            // TAKE DATABASE DATA AND CALCULATED VALUES ABOVE, AND TEMPLATE LITERAL THEM INTO THE SCHEDULE TABLE
             $("#train_list").append("<tr><th scope='row'>" + childSnapshot.val().name + "</th><td>" + childSnapshot.val().route + "</td><td>" + childSnapshot.val().freq + "</td><td>" + nextArrival + "</td><td>" + nextTrainMinutes + "</td></tr>");
 
-            // and if any errors occur, send them to this function
+            // if any errors occur, send them here, to .on()'s second error handler function
         }, function (errorObject) {
             console.log("Errors handled: " + errorObject.code);
         });
