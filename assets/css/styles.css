@@ -1,3 +1,4 @@
+
 /* Train Scheduler
 Firebase Realtime Database and MomentJS, with Bootstrap and jQuery
 © Richard Trevillian, 2018-09-20
@@ -6,21 +7,25 @@ University of Richmond, Full Stack Web Development Bootcamp */
 /* STYLES FOR BACKGROUND IMAGE BELOW */
 
 body {
-    background-color: gray;
+    background: url(/assets/images/1200px-Engelberg_Bahnhof_2013-02-05.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    /* height: 100vh; */
 }
 
-body::after {
+/* body::after {
     content: "";
     background: url(/assets/images/1200px-Engelberg_Bahnhof_2013-02-05.jpg);
     background-size: cover;
-    opacity: 0.4;
+    opacity: 0.9;
     top: 0;
     left: 0;
     bottom: -30px;
     right: 0;
     position: fixed;
     z-index: -1;
-}
+} */
 
 /* STYLES FOR SWISS RAILWAY CLOCK BELOW */
 /* Swiss Railway Clock by Richard Beddington  */
@@ -35,11 +40,13 @@ body::after {
 
 .clock {
     width: 100%;
+    position: relative;
 }
 
 #clockbox {
     width: 100%;
     margin: 0 auto;
+    text-align: center;
 }
 
 
@@ -48,6 +55,7 @@ body::after {
 .jumbotron {
     margin-top: 20px;
     background-color: rgba(226, 237, 250, 0.3);
+
 }
 
 .card {
@@ -58,10 +66,18 @@ body::after {
     letter-spacing: .05rem;
 }
 
+#time_box {
+    float: left;
+}
+
+#schedule_box {
+    float: left;
+}
+
 
 /* MEDIA QUERY FOR DIGITAL CLOCK BELOW */
 
-@media (min-width: 360px) {
+@media (min-width: 410px) {
     #time_box {
         float: right;
     }
