@@ -310,7 +310,7 @@
 
 
             // HEY! I made an ES6 IIFE! Yay me!
-            // Anonymous Immediately Invoked (ES6 Arrow) Function Expression:
+            // Anonymous Immediately Invoked (ES6 Arrow) Function Expression
             // THIS CONTROLS THE COUNTDOWN TIMER ON MINUTES AWAY,
             // AND REFRESHES THE NEXT ARRIVAL TIME WHEN MINUTES AWAY HITS 0
             (() => {
@@ -358,9 +358,14 @@
                     }
 
                 }
-                
-                // call the count() function once every second
-                setInterval(count, 1000);
+
+                // define the START function to start the countdown (call below)
+                function start() {
+                    // intervalId defined as setInterval with COUNT callback function and 1 sec interval
+                    intervalId = setInterval(count, 1000);
+                }
+
+                start();
 
             })()
 

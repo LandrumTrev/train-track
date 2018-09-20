@@ -273,7 +273,6 @@
         // watch the root top level of database for any child data set objects added
         db.ref().on("child_added", function (childSnapshot) {
 
-
             // set trainFirst to value of .first, a 24h MILITARY TIME from snapshot data of the child_added
             trainFirst = childSnapshot.val().first;
 
@@ -303,70 +302,8 @@
             // console.log(nextArrival);
 
 
-            // get the unique key name of each child in the snapshot
-            // use this to give each train's Minutes Away <td> a unique id="" in the template literal
-            var keyID = childSnapshot.key;
-            // console.log(keyID);
-
-
-            // HEY! I made an ES6 IIFE! Yay me!
-            // Anonymous Immediately Invoked (ES6 Arrow) Function Expression:
-            // THIS CONTROLS THE COUNTDOWN TIMER ON MINUTES AWAY,
-            // AND REFRESHES THE NEXT ARRIVAL TIME WHEN MINUTES AWAY HITS 0
-            (() => {
-
-                // set time's seconds to nextTrainMinutes times 60 (seconds)
-                var time = nextTrainMinutes * 60;
-
-                // timeConverter function to turn an integer into minutes + seconds
-                function timeConverter(t) {
-
-                    var minutes = Math.floor(t / 60);
-                    var seconds = t - (minutes * 60);
-
-                    if (seconds < 10) {
-                        seconds = "0" + seconds;
-                    }
-
-                    if (minutes === 0) {
-                        minutes = "00";
-                    } else if (minutes < 10) {
-                        minutes = "0" + minutes;
-                    }
-
-                    return minutes + ":" + seconds;
-                }
-
-                // callback for setInterval() inside start(), below. Runs once per second.
-                function count() {
-
-                    // decrement the number of seconds in time
-                    time--;
-
-                    // time's seconds converted into 00:00 minutes and seconds format
-                    let converted = timeConverter(time);
-
-                    // grab the unique 
-                    $('#' + keyID).text(converted);
-
-                    // when the value of time reaches 0, then...
-                    if (time === 0) {
-                        // if time runs out without user clicking a button
-                        time = nextTrainMinutes * 60;
-
-                        // PUT CODE IN HERE TO REFRESH THE NEXT ARRIVAL TIME
-                    }
-
-                }
-                
-                // call the count() function once every second
-                setInterval(count, 1000);
-
-            })()
-
-
-            // TAKE DATABASE DATA AND CALCULATED VALUES ABOVE, AND APPEND THEM INTO THE SCHEDULE TABLE
-            $("#train_list").append("<tr><th scope='row'>" + childSnapshot.val().name + "</th><td>" + childSnapshot.val().route + "</td><td>" + childSnapshot.val().freq + "</td><td>" + nextArrival + "</td><td id='" + keyID + "'></td></tr>");
+            // TAKE DATABASE DATA AND CALCULATED VALUES ABOVE, AND TEMPLATE LITERAL THEM INTO THE SCHEDULE TABLE
+            $("#train_list").append("<tr><th scope='row'>" + childSnapshot.val().name + "</th><td>" + childSnapshot.val().route + "</td><td>" + childSnapshot.val().freq + "</td><td>" + nextArrival + "</td><td>" + nextTrainMinutes + "</td></tr>");
 
             // if any errors occur, send them here, to .on()'s second error handler function
         }, function (errorObject) {
@@ -379,160 +316,12 @@
         // ==========================================================
 
         var updateClock = function () {
-            var realTime = moment().format("hh:mm:ss A");
+            var realTime = moment().format("hh:mm:ss A")
             $("#time_box").html(realTime);
         }
         setInterval(updateClock, 1000);
 
-
         // ==========================================================
-        // COUNTDOWN TIMER CODE FOR TIME TO ARRIVAL
-        // ==========================================================
-
-
-        // var minutesAwayCountdown = function () {
-        //     var updateArrival = function () {
-        //         var countdown = moment().format("hh:mm:ss");
-        //         $(".minutes_away").html(countdown);
-        //     }
-        //     setInterval(updateArrival, 1000);
-        // }
-
-
-
-
-
-        // function minutesAwayCountdown() {
-
-        //     // set time's seconds to nextTrainMinutes times 60 (seconds)
-        //     var time = nextTrainMinutes * 60;
-
-        //     // go to the <td> "minutes_away" and insert the value of time
-        //     // which right now is an integer
-        //     // $(".minutes_away").text(time);
-
-        //     // timeConverter function to turn an integer into minutes + seconds
-        //     function timeConverter(t) {
-
-        //         var minutes = Math.floor(t / 60);
-        //         var seconds = t - (minutes * 60);
-
-        //         if (seconds < 10) {
-        //             seconds = "0" + seconds;
-        //         }
-
-        //         if (minutes === 0) {
-        //             minutes = "00";
-        //         } else if (minutes < 10) {
-        //             minutes = "0" + minutes;
-        //         }
-
-        //         return minutes + ":" + seconds;
-        //     }
-
-        //     // callback for setInterval() inside start(), below. Runs once per second.
-        //     function count() {
-
-        //         // decrement the number of seconds in time
-        //         time--;
-
-        //         // time's seconds converted into 00:00 minutes and seconds format
-        //         let converted = timeConverter(time);
-
-        //         // write the converted 00:00 format time into <td class='minutes_away'>
-        //         $(".minutes_away").text(converted);
-
-        //         // when the value of time reaches 0, then...
-        //         // if (time === 0) {
-        //         //     // if time runs out without user clicking a button
-        //         //     $('#question').html("<strong>" + timesup + "</strong>");
-        //         //     $('#question').append("<p>" + qAnswer + "</p>");
-        //         //     $('button').prop("disabled", true);
-        //         //     unAnswers = unAnswers + 1;
-        //         //     qObject = qObject + 1;
-        //         //     clearInterval(intervalId);
-        //         //     setTimeout(displayQuestion, 1000 * 10);
-        //         // }
-        //     }
-
-        //     // define the START function to start the countdown (call below)
-        //     function start() {
-        //         // intervalId defined as setInterval with COUNT callback function and 1 sec interval
-        //         intervalId = setInterval(count, 1000);
-        //     }
-
-        //     start();
-
-
-        // }
-
-
-
-
-
-
-
-
-        function countdown() {
-
-            // set time to 60 seconds
-            // time = 60;
-
-            // write the initial starting number to the page (match to seconds set in the TIME variable above)
-            // $("#timer").text("00:60");
-
-            // timeConverter function copied from the stopwatchSolution.js class activity... thank you! :-)
-            // function timeConverter(t) {
-
-            //     var minutes = Math.floor(t / 60);
-            //     var seconds = t - (minutes * 60);
-
-            //     if (seconds < 10) {
-            //         seconds = "0" + seconds;
-            //     }
-
-            //     if (minutes === 0) {
-            //         minutes = "00";
-            //     } else if (minutes < 10) {
-            //         minutes = "0" + minutes;
-            //     }
-
-            //     return minutes + ":" + seconds;
-            // }
-
-            // // the Callback function called in START's setInterval() method
-            // // this function's actions run once every second, as defined by setInterval(count, 1000), below
-            // function count() {
-
-            //     // each time COUNT is called by START(), every 1 second, decrement the value of time by 1 (second)
-            //     time--;
-            //     // console.log(time);
-            //     // a variable to stand for the value of TIME, converted into clock time by the timeConverter() function above
-            //     let converted = timeConverter(time);
-            //     // write the new clock time (new second) converted by timeConverter() to the TIMER page DIV
-            //     $("#timer").text(converted);
-            //     // when the value of time reaches 0, then...
-            //     if (time === 0) {
-            //         // if time runs out without user clicking a button
-            //         $('#question').html("<strong>" + timesup + "</strong>");
-            //         $('#question').append("<p>" + qAnswer + "</p>");
-            //         $('button').prop("disabled", true);
-            //         unAnswers = unAnswers + 1;
-            //         qObject = qObject + 1;
-            //         clearInterval(intervalId);
-            //         setTimeout(displayQuestion, 1000 * 10);
-            //     }
-            // }
-
-            // // define the START function to start the countdown (call below)
-            // function start() {
-            //     // intervalId defined as setInterval with COUNT callback function and 1 sec interval
-            //     intervalId = setInterval(count, 1000);
-            // }
-
-            // start();
-
-        }
     </script>
 </body>
 
