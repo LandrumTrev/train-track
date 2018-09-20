@@ -5,77 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Transportation Scheduler</title>
-    <link rel="stylesheet" href="assets/css/styles.css">
+    <title>Train Scheduler</title>
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 
-    <style>
-        body {
-            background-color: gray;
-        }
+    <link rel="stylesheet" href="assets/css/styles.css">
 
-        body::after {
-        content: "";
-        background: url(/assets/images/1200px-Engelberg_Bahnhof_2013-02-05.jpg);
-        background-size: cover;
-        opacity: 0.4;
-        top: 0;
-        left: 0;
-        bottom: -30px;
-        right: 0;
-        position: fixed;
-        z-index: -1;   
-        }
-
-        /* STYLES FOR SWISS RAILWAY CLOCK BELOW */
-        /* Swiss Railway Clock by Richard Beddington  */
-        /* https: //codepen.io/RichieAHB/ */
-
-        *,
-        :before,
-        :after {
-            box-sizing: border-box;
-        }
-
-        .clock {
-            /* left: 0px; */
-            /* position: absolute; */
-            /* top: 0; */
-            width: 100%;
-            /* border: .1px solid red; */
-
-        }
-
-        #clockbox {
-            /* height: 300px; */
-            width: 100%;
-            margin: 0 auto;
-            /* text-align: center; */
-            /* border: .1px solid red; */
-
-        }
-        /* STYLES FOR SWISS RAILWAY CLOCK ABOVE */
-
-        .jumbotron {
-            margin-top: 20px;
-            background-color: rgba(226, 237, 250, 0.5);
-        }
-        .card {
-            margin-bottom: 30px;
-        }
-        .card-header {
-            letter-spacing: .05rem;
-        }
-
-
-        @media (min-width: 360px) {
-            #time_box {
-                float: right;
-            }
-        }
-
-    </style>
 </head>
 
 <body>
@@ -112,7 +47,7 @@
                             <td>05:35 PM</td>
                             <td>10</td>
                         </tr>
-                        <!-- <tr>
+                        <tr>
                             <th scope="row">Orient Express</th>
                             <td>Paris-Constantinople</td>
                             <td>3600</td>
@@ -153,7 +88,7 @@
                             <td>25</td>
                             <td>05:28 PM</td>
                             <td>3</td>
-                        </tr> -->
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -190,208 +125,24 @@
     </div>
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    
     <script src="https://www.gstatic.com/firebasejs/5.4.1/firebase.js"></script>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+   
     <script src="assets/js/swissrail.js"></script>
+
     <script src="assets/js/scripts.js"></script>
 
-    <script>
-        // ==========================================================
-        // CONNECT TO FIREBASE REALTIME DATABASE
-        // ==========================================================
-
-        // initialize variable with Firebase credentials
-        var config = {
-            apiKey: "AIzaSyCAlKIQlCVpzuFGD4nNsXqistWoyzM5wcE",
-            authDomain: "trainschedule-a52e0.firebaseapp.com",
-            databaseURL: "https://trainschedule-a52e0.firebaseio.com",
-            projectId: "trainschedule-a52e0",
-            storageBucket: "trainschedule-a52e0.appspot.com",
-            messagingSenderId: "619259019326"
-        };
-        // initalize Firebase, send credentials
-        firebase.initializeApp(config);
-        // create a reference to the Firebase Realtime Database
-        var db = firebase.database();
-
-
-        // ==========================================================
-        // INITIALIZE VARIABLES FOR STORED DATA
-        // ==========================================================
-
-        var trainName = "";
-        var trainRoute = "";
-        var trainFirst = "";
-        var trainFreq = 0;
-
-
-        // ==========================================================
-        // SUBMIT BUTTON BELOW - SENDS NEW TRAIN TO DATABASE
-        // ==========================================================
-
-        $("#add_train_btn").on("click", function () {
-
-            event.preventDefault();
-
-            trainName = $("#train_name").val().trim();
-            trainRoute = $("#train_route").val().trim();
-            trainFirst = $("#train_first").val().trim();
-            trainFreq = $("#train_freq").val().trim();
-
-            // console.log(trainName);
-            // console.log(trainRoute);
-            // console.log(trainFirst);
-            // console.log(trainFreq);
-
-            var addTrain = {
-                name: trainName,
-                route: trainRoute,
-                first: trainFirst,
-                freq: trainFreq,
-            }
-
-            console.log(addTrain);
-
-            // .push() a new data set object to root level of database
-            db.ref().push(addTrain);
-
-            $("#train_name").val("");
-            $("#train_route").val("");
-            $("#train_first").val("");
-            $("#train_freq").val("");
-
-        });
-
-
-
-        // ==========================================================
-        // EVENT LISTENER ADDS NEW DATABASE TRAINS TO THE PAGE'S SCHEDULE
-        // ==========================================================
-
-        // watch the root top level of database for any child data set objects added
-        db.ref().on("child_added", function (childSnapshot) {
-
-
-            // set trainFirst to value of .first, a 24h MILITARY TIME from snapshot data of the child_added
-            trainFirst = childSnapshot.val().first;
-
-            // set trainFreq to value of .freq, # MINUTES BETWEEN TRAINS from snapshot data of the child_added
-            trainFreq = childSnapshot.val().freq;
-
-            // MomentJS object: trainFirst time, 1 day ago, in 24h MILITARY TIME
-            // set in the past in case first train time is before current time, so we always get a positve number
-            var trainFirstConverted = moment(trainFirst, "HH:mm").subtract(1, "days");
-
-            // Number (~ a day's worth of minutes, +/-): minutes difference between now and trainFirstConverted
-            var timeDiffMinutes = moment().diff(moment(trainFirstConverted), "minutes");
-
-            // get the remainder (MODULUS %) of dividing timeDiffMinutes by / trainFreq
-            var timeRemainder = timeDiffMinutes % trainFreq;
-            // console.log(timeRemainder);
-
-            // MINUTES AWAY from next train arrival is trainFreq minus timeRemainder
-            var nextTrainMinutes = trainFreq - timeRemainder;
-            // console.log("MINUTES TILL TRAIN: " + nextTrainMinutes);
-
-            // MomentJS object: TIME OF NEXT ARRIVAL is current time plus nextTrainMinutes
-            var nextTrain = moment().add(nextTrainMinutes, "minutes");
-
-            // format the nextTrain MomentJS object to get it's value in CIVILIAN TIME
-            var nextArrival = moment(nextTrain).format("hh:mm A");
-            // console.log(nextArrival);
-
-
-            // get the unique key name of each child in the snapshot
-            // use this to give each train's Minutes Away <td> a unique id="" in the template literal
-            var keyID = childSnapshot.key;
-            // console.log(keyID);
-
-            // create a slightly different unique name to use as each trains id="" for Next Arrival <td>
-            var keyNext = keyID + "-next";
-            // console.log(keyNext);
-
-
-
-            // HEY! I made an ES6 IIFE! Yay me!
-            // Anonymous Immediately Invoked (ES6 Arrow) Function Expression:
-            // THIS CONTROLS THE COUNTDOWN TIMER ON MINUTES AWAY,
-            // AND REFRESHES THE NEXT ARRIVAL TIME WHEN MINUTES AWAY HITS 0
-            (() => {
-
-                // set time's seconds to nextTrainMinutes times 60 (seconds)
-                var time = nextTrainMinutes * 60;
-
-                // timeConverter function to turn an integer into minutes + seconds
-                function timeConverter(t) {
-
-                    var minutes = Math.floor(t / 60);
-                    var seconds = t - (minutes * 60);
-
-                    if (seconds < 10) {
-                        seconds = "0" + seconds;
-                    }
-
-                    if (minutes === 0) {
-                        minutes = "00";
-                    } else if (minutes < 10) {
-                        minutes = "0" + minutes;
-                    }
-
-                    return minutes + ":" + seconds;
-                }
-
-                // callback for setInterval() below. Runs once per second.
-                function count() {
-
-                    // decrement the number of seconds in time
-                    time--;
-
-                    // time's seconds converted into 00:00 minutes and seconds format
-                    let converted = timeConverter(time);
-
-                    // grab the unique 
-                    $('#' + keyID).text(converted);
-
-                    // when the value of time reaches 0, then...
-                    if (time === 0) {
-
-                        // reset time's value to nextTrainMinutes to reset the Minute's Away countdown
-                        time = nextTrainMinutes * 60;
-
-                        // probably a cop-out to reload the window to refresh Next Arrival,
-                        // but not sure how else to do it...
-                        window.location.reload(true);
-                    }
-
-                }
-
-                // call the count() function once every second
-                setInterval(count, 1000);
-
-            })()
-
-
-            // TAKE DATABASE DATA AND CALCULATED VALUES ABOVE, AND APPEND THEM INTO THE SCHEDULE TABLE
-            $("#train_list").append("<tr><th scope='row'>" + childSnapshot.val().name + "</th><td>" + childSnapshot.val().route + "</td><td>" + childSnapshot.val().freq + "</td><td id='" + keyNext + "'>" + nextArrival + "</td><td id='" + keyID + "'></td></tr>");
-
-            // if any errors occur, send them here, to .on()'s second error handler function
-        }, function (errorObject) {
-            console.log("Errors handled: " + errorObject.code);
-        });
-
-
-        // ==========================================================
-        // CODE FOR DIGITAL CLOCK ON "CURRENT TRAIN SCHEDULE" BAR
-        // ==========================================================
-
-        var updateClock = function () {
-            var realTime = moment().format("hh:mm:ss A");
-            $("#time_box").html(realTime);
-        }
-        setInterval(updateClock, 1000);
-    </script>
 </body>
 
 </html>
+
+<!-- Train Scheduler
+Firebase Realtime Database and MomentJS, with Bootstrap and jQuery
+© Richard Trevillian, 2018-09-20
+University of Richmond, Full Stack Web Development Bootcamp -->
