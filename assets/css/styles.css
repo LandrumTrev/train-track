@@ -11,7 +11,7 @@ body {
 
 body::after {
     content: "";
-    background: url(/assets/images/1200px-Engelberg_Bahnhof_2013-02-05.jpg);
+    background: url(assets/images/1200px-Engelberg_Bahnhof_2013-02-05.jpg);
     background-size: cover;
     opacity: 0.4;
     top: 0;
