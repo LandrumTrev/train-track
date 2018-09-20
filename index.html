@@ -59,21 +59,21 @@
 
         .jumbotron {
             margin-top: 20px;
-            background-color: rgb(226, 237, 250);
+            background-color: rgba(226, 237, 250, 0.5);
         }
         .card {
             margin-bottom: 30px;
         }
-
-
-        #time_box {
-            float: right;
-        }
-        #time_data {
-
+        .card-header {
+            letter-spacing: .05rem;
         }
 
 
+        @media (min-width: 360px) {
+            #time_box {
+                float: right;
+            }
+        }
 
     </style>
 </head>
@@ -90,9 +90,7 @@
 
         <div class="card">
             <h5 class="card-header bg-primary text-light">Current Train Schedule
-                <span id="time_box" class="bg-primary text-light">Current Time:
-                    <span id="time_data" class="bg-primary text-light">00:00:00</span>
-                </span>
+                <span id="time_box" class="bg-primary text-light"></span>
             </h5>
 
             <div class="card-body">
@@ -335,7 +333,13 @@
         // CODE FOR DIGITAL CLOCK
         // ==========================================================
 
+        var updateClock = function () {
+            var realTime = moment().format("hh:mm:ss A")
+            $("#time_box").html(realTime);
+        }
+        setInterval(updateClock, 1000);
 
+        // ==========================================================
     </script>
 </body>
 
