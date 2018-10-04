@@ -14,36 +14,24 @@ University of Richmond, Full Stack Web Development Bootcamp */
 } */
 
 
-/* STYLES FOR SWISS RAILWAY CLOCK BELOW */
-/* Swiss Railway Clock by Richard Beddington  */
-/* https: //codepen.io/RichieAHB/ */
-/* Thanks Richie! Sweet clock! */
-
-*,
-:before,
-:after {
-    box-sizing: border-box;
+html {
+    height: 100%;
 }
 
-.clock {
-    width: 100%;
-    position: relative;
+body {
+    background-color: rgba(255, 255, 255, 0);
+    background: url(/assets/images/swisstrain.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
 }
 
-#clockbox {
-    width: 100%;
-    margin: 0 auto;
-    text-align: center;
-}
+#page_contents {
 
-
-/* STYLES FOR BOOTSTRAP TWEAKS BELOW */
-
-.jumbotron {
-    margin-top: 20px;
-    background-color: rgba(226, 237, 250, 0.3);
+    margin-top: 30px;
 
 }
+
 
 .card {
     margin-bottom: 30px;

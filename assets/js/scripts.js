@@ -3,11 +3,6 @@
 // © Richard Trevillian, 2018-09-20
 // University of Richmond, Full Stack Web Development Bootcamp
 
-// Swiss Railway Clock by Richard Beddington 
-// https: //codepen.io/RichieAHB/
-// Thanks Richie! Sweet clock!
-
-
 
 // START jQUERY FUNCTION
 // ----------------------------------------------------------------
@@ -48,7 +43,7 @@ $(document).ready(function () {
     // ==========================================================
 
     // add an on-click event listener to the Submit button
-    $("#add_train_btn").on("click", function () {
+    $("#add_train_btn").on("click", function (event) {
 
         // prevent the default Submit button input behavior
         event.preventDefault();
@@ -84,150 +79,169 @@ $(document).ready(function () {
     // ==========================================================
 
     // watch the root level of database for the addition of any child data objects
-    db.ref().on("child_added", function (childSnapshot) {
+    db.ref().on("child_added", function (snapshot) {
 
-        // MOMENT.JS CALCULATION VARIABLES BELOW
+            // console.log(childSnapshot.val());
+            makeTrainSchedule(snapshot);
 
-        // 24h Time (00:00): firstTrain is value of .first from snapshot of child_added
-        var firstTrain = childSnapshot.val().first;
-        // console.log(firstTrain);
+            function makeTrainSchedule(childSnapshot) {
 
-        // Number (minutes): freqTrain is value of .freq from snapshot of child_added
-        var freqTrain = childSnapshot.val().freq;
-        // console.log(freqTrain);
+                // create an object to hold individual values for each train object returned by childSnapshot
+                var aTrain = {};
 
-        // MomentJS object: firstTrain time, 1 day ago, in 24h MILITARY TIME
-        // set in past in case firstTrain time is before current time, so always pos num
-        var firstTrainConverted = moment(firstTrain, "HH:mm").subtract(1, "days");
-        // console.log(firstTrainConverted);
+                aTrain.name = childSnapshot.val().name;
+                aTrain.route = childSnapshot.val().route;
 
-        // Number: (a day of minutes, +/-): difference b/w now and firstTrainConverted
-        var timeDiffMinutes = moment().diff(moment(firstTrainConverted), "minutes");
-        // console.log(timeDiffMinutes);
+                // MOMENT.JS CALCULATION VARIABLES BELOW
 
-        // Number: remainder (MODULUS %) of dividing timeDiffMinutes by freqTrain
-        var timeRemainder = timeDiffMinutes % freqTrain;
-        // console.log(timeRemainder);
+                // 24h Time (00:00): firstTrain is value of .first from snapshot of child_added
+                aTrain.firstTrain = childSnapshot.val().first;
+                // console.log(firstTrain);
 
-        // Number: MINUTES AWAY from next train arrival is freqTrain minus timeRemainder
-        var nextTrainMinutes = freqTrain - timeRemainder;
-        // console.log(nextTrainMinutes);
+                // Number (minutes): freqTrain is value of .freq from snapshot of child_added
+                aTrain.freqTrain = childSnapshot.val().freq;
+                // console.log(freqTrain);
 
-        // MomentJS object: TIME OF NEXT ARRIVAL is current time plus nextTrainMinutes
-        var nextTrain = moment().add(nextTrainMinutes, "minutes");
-        // console.log(nextTrain);
+                // MomentJS object: firstTrain time, 1 day ago, in 24h MILITARY TIME
+                // set in past in case firstTrain time is before current time, so always pos num
+                aTrain.firstTrainConverted = moment(aTrain.firstTrain, "HH:mm").subtract(1, "year");
+                // console.log(firstTrainConverted);
 
-        // format the nextTrain MomentJS object to get it's value in CIVILIAN TIME
-        var nextArrival = moment(nextTrain).format("hh:mm A");
-        // console.log(nextArrival);
+                // Number: (a day of minutes, +/-): difference b/w now and firstTrainConverted
+                aTrain.timeDiffMinutes = moment().diff(moment(aTrain.firstTrainConverted), "minutes");
+                // console.log(timeDiffMinutes);
 
+                // Number: remainder (MODULUS %) of dividing timeDiffMinutes by freqTrain
+                aTrain.timeRemainder = aTrain.timeDiffMinutes % aTrain.freqTrain;
+                // console.log(timeRemainder);
 
-        // ==========================================================
+                // Number: MINUTES AWAY from next train arrival is freqTrain minus timeRemainder
+                aTrain.nextTrainMinutes = aTrain.freqTrain - aTrain.timeRemainder;
+                // console.log(nextTrainMinutes);
 
+                // MomentJS object: TIME OF NEXT ARRIVAL is current time plus nextTrainMinutes
+                aTrain.nextTrain = moment().add(aTrain.nextTrainMinutes, "minutes");
+                // console.log(nextTrain);
 
-        // IDs CREATED FOR DOM MANIPULATION OF TRAIN TABLE CELLS BELOW
-
-        // get the database's unique key name of each child in the snapshot
-        // use this to give each train's Minutes Away <td> a unique id=""
-        var keyID = childSnapshot.key;
-        // console.log(keyID);
-
-        // modify keyID to give each train's Next Arrival <td> a unique id=""
-        var keyNext = keyID + "-next";
-        // console.log(keyNext);
+                // format the nextTrain MomentJS object to get it's value in CIVILIAN TIME
+                aTrain.nextArrival = moment(aTrain.nextTrain).format("hh:mm A");
+                // console.log(nextArrival);
 
 
-        // ==========================================================
+                // ==========================================================
 
 
-        // THIS CONTROLS THE COUNTDOWN TIMER ON MINUTES AWAY,
-        // AND REFRESHES THE NEXT ARRIVAL TIME WHEN MINUTES AWAY HITS 0
+                // IDs CREATED FOR DOM MANIPULATION OF TRAIN TABLE CELLS BELOW
 
-        // HEY! I made an ES6 IIFE! Yay me!
-        // Anonymous Immediately Invoked (ES6 Arrow) Function Expression:
-        (() => {
+                // get the database's unique key name of each child in the snapshot
+                // use this to give each train's Minutes Away <td> a unique id=""
+                aTrain.keyID = childSnapshot.key;
+                // console.log(aTrain.keyID);
 
-            // set time's seconds to be nextTrainMinutes times 60 (seconds)
-            var time = nextTrainMinutes * 60;
-
-
-            // TIME CONVERTER FUNCTION BELOW
-
-            // timeConverter function to turn an integer into minutes + seconds
-            function timeConverter(t) {
-
-                // divide the number of seconds passed into timeConverter by 60,
-                // and round down to an integer, to get MINUTES
-                var minutes = Math.floor(t / 60);
-
-                // take MINUTES above times 60 to get seconds,
-                // and subtract those seconds from number of seconds passed in,
-                // to get the leftover SECONDS not converted to minutes, above
-                var seconds = t - (minutes * 60);
-
-                // if SECONDS are less than 10, 
-                if (seconds < 10) {
-                    // add a 0 to keep them double digits
-                    seconds = "0" + seconds;
-                }
-
-                // if MINUTES are 0,
-                if (minutes === 0) {
-                    // add 00 to keep minutes double digits,
-                    minutes = "00";
-                    // or if minutes are less than 10 (but not 0),
-                } else if (minutes < 10) {
-                    // add a 0 to keep minutes double digits
-                    minutes = "0" + minutes;
-                }
-
-                // return minutes:seconds (00:00 format) as the value of this function
-                return minutes + ":" + seconds;
-            }
+                // modify keyID to give each train's Next Arrival <td> a unique id=""
+                aTrain.keyNext = aTrain.keyID + "-next";
+                // console.log(aTrain.keyNext);
 
 
-            // COUNT FUNCTION BELOW: 
-            // DECREMENTS SECONDS, CALLS THE TIME FORMAT CONVERTER, MANIPULATES DOM,
-            // AND RESETS MINUTES AWAY AND NEXT ARRIVAL COUNTS
-
-            // callback for setInterval() below. Runs once per second.
-            function count() {
-
-                // decrement the number of seconds in time
-                time--;
-
-                // time's seconds converted into 00:00 minutes and seconds format
-                let converted = timeConverter(time);
-
-                // grab the unique ID of each Minutes Away <td>, insert converted time
-                $('#' + keyID).text(converted);
-
-                // when the value of time reaches 0, then...
-                if (time === 0) {
-
-                    // reset time value to nextTrainMinutes to reset the Minute's Away
-                    time = nextTrainMinutes * 60;
-
-                    // probably a cop-out to reload the window to refresh Next Arrival,
-                    // but not sure how else to do it...
-                    window.location.reload(true);
-                }
-
-            }
-
-            // call the count() function once every second
-            setInterval(count, 1000);
-
-        })()
+                // ==========================================================
 
 
-        // TAKE DATABASE DATA AND CALCULATED VALUES ABOVE, AND APPEND THEM INTO THE SCHEDULE TABLE, ONCE FOR EACH TRAIN IN THE DATABASE
-        $("#train_list").append("<tr><th scope='row'>" + childSnapshot.val().name + "</th><td>" + childSnapshot.val().route + "</td><td>" + childSnapshot.val().freq + "</td><td id='" + keyNext + "'>" + nextArrival + "</td><td id='" + keyID + "'></td></tr>");
+                // THIS CONTROLS THE COUNTDOWN TIMER ON MINUTES AWAY,
+                // AND REFRESHES THE NEXT ARRIVAL TIME WHEN MINUTES AWAY HITS 0
+
+                // HEY! I made an ES6 IIFE! Yay me!
+                // Anonymous Immediately Invoked (ES6 Arrow) Function Expression:
+                (() => {
+
+                    // set time's seconds to be nextTrainMinutes times 60 (seconds)
+                    aTrain.time = aTrain.nextTrainMinutes * 60;
+
+
+                    // TIME CONVERTER FUNCTION BELOW
+
+                    // timeConverter function to turn an integer into minutes + seconds
+                    function timeConverter(t) {
+
+                        // divide the number of seconds passed into timeConverter by 60,
+                        // and round down to an integer, to get MINUTES
+                        aTrain.minutes = Math.floor(t / 60);
+
+                        // take MINUTES above times 60 to get seconds,
+                        // and subtract those seconds from number of seconds passed in,
+                        // to get the leftover SECONDS not converted to minutes, above
+                        aTrain.seconds = t - (aTrain.minutes * 60);
+
+                        // if SECONDS are less than 10, 
+                        if (aTrain.seconds < 10) {
+                            // add a 0 to keep them double digits
+                            aTrain.seconds = "0" + aTrain.seconds;
+                        }
+
+                        // if MINUTES are 0,
+                        if (aTrain.minutes === 0) {
+                            // add 00 to keep minutes double digits,
+                            aTrain.minutes = "00";
+                            // or if minutes are less than 10 (but not 0),
+                        } else if (aTrain.minutes < 10) {
+                            // add a 0 to keep minutes double digits
+                            aTrain.minutes = "0" + aTrain.minutes;
+                        }
+
+                        // return minutes:seconds (00:00 format) as the value of this function
+                        return aTrain.minutes + ":" + aTrain.seconds;
+                    }
+
+
+                    // COUNT FUNCTION BELOW: 
+                    // DECREMENTS SECONDS, CALLS THE TIME FORMAT CONVERTER, MANIPULATES DOM,
+                    // AND RESETS MINUTES AWAY AND NEXT ARRIVAL COUNTS
+
+                    // callback for setInterval() below. Runs once per second.
+                    function count() {
+
+                        // decrement the number of seconds in time
+                        aTrain.time--;
+
+                        // time's seconds converted into 00:00 minutes and seconds format
+                        aTrain.converted = timeConverter(aTrain.time);
+
+                        // grab the unique ID of each Minutes Away <td>, insert converted time
+                        $('#' + aTrain.keyID).text(aTrain.converted);
+
+                        // when the value of time reaches 0, then...
+                        if (aTrain.time === 0) {
+
+                            // reset time value to nextTrainMinutes to reset the Minute's Away
+                            aTrain.time = aTrain.nextTrainMinutes * 60;
+
+                            // reset nextTrain since it calls current time with moment()
+                            aTrain.nextTrain = moment().add(aTrain.nextTrainMinutes, "minutes");
+
+                            // and also reset nextArrival, based on new current time from nextTrain
+                            aTrain.nextArrival = moment(aTrain.nextTrain).format("hh:mm A");
+
+                            // grab the unique ID of each Next Arrival <td>, insert new nextArrival value
+                            $('#' + aTrain.keyNext).text(aTrain.nextArrival);
+
+                        }
+                    }
+
+                    // call the count() function once every second
+                    setInterval(count, 1000);
+
+                    // TAKE DATABASE DATA AND CALCULATED VALUES ABOVE, AND APPEND THEM INTO THE SCHEDULE TABLE, ONCE FOR EACH TRAIN IN THE DATABASE
+                    $("#train_list").append("<tr><th scope='row'>" + aTrain.name + "</th><td>" + aTrain.route + "</td><td>" + aTrain.freqTrain + "</td><td id='" + aTrain.keyNext + "'>" + aTrain.nextArrival + "</td><td id='" + aTrain.keyID + "'></td></tr>");
+
+                })()
+
+            };
+        },
 
         // if any errors occur, send them here, to .on()'s second error handler function
-    }, function (errorObject) {
-        console.log("Errors handled: " + errorObject.code);
-    });
+        function (errorObject) {
+            console.log("Errors handled: " + errorObject.code);
+        });
+
 
 
     // ==========================================================
