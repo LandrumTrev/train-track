@@ -1,7 +1,7 @@
 # TrainTrack
 #### Train schedule time tracker with database entry functionality
 
-JavaScript, jQuery, CSS, HTML, Bootstrap, Firebase, MomentJS, GitHub, responsive web design (RWD), AJAX/async. Retrieves async data via AJAX from GIPHY.com API and manipulates DOM.
+JavaScript, jQuery, CSS, HTML, Bootstrap, Firebase, MomentJS, GitHub, responsive web design (RWD). Retrieves data from Firebase Realtime Database and performs time calculations with MomentJS.
 
 Application displays a list of trains and their information (name, route, frequency, next arrival time, and minutes away countdown timer) based on data stored in a Firebase Realtime Database. 
 
