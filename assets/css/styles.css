@@ -1,18 +1,8 @@
 
-/* Train Scheduler
+/* TrainTrack
 Firebase Realtime Database and MomentJS, with Bootstrap and jQuery
 © Richard Trevillian, 2018-09-20
 University of Richmond, Full Stack Web Development Bootcamp */
-
-/* STYLES FOR BACKGROUND IMAGE BELOW */
-
-/* body {
-    background: url(../images/swisstrain.jpg);
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center center;
-} */
-
 
 html {
     height: 100%;
@@ -32,7 +22,6 @@ body {
 
 }
 
-
 .card {
     margin-bottom: 30px;
 }
@@ -50,7 +39,7 @@ body {
 }
 
 
-/* MEDIA QUERY FOR DIGITAL CLOCK BELOW */
+/* MEDIA QUERY FOR DIGITAL CLOCK */
 
 @media (min-width: 410px) {
     #time_box {
